@@ -1,0 +1,14 @@
+vendor/
+.env
+*.log
+.DS_Store
+node_modules/
+/php/config/
+/php/config/credentials.json
+/php/helpers/CorreoHelper.php
+/php/config/Database.php
+
+# Ignore all credential files (for security)
+*credentials*.json
+*secret*.json
+composer.lock

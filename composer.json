@@ -1,0 +1,16 @@
+{
+    "name": "msarabia/facilisimo",
+    "authors": [
+        {
+            "name": "miguel sarabia",
+            "email": "50601647+miguelsarabia@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "phpmailer/phpmailer": "^6.9",
+        "google/apiclient": "^2.0",
+        "league/oauth2-google": "^4.0",
+        "league/oauth2-client": "^2.8",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
