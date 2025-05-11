@@ -12,7 +12,7 @@ class User {
      * Buscar usuario por correo electrónico
      */
     public function findByEmail($email) {
-        $stmt = $this->conn->prepare("SELECT usuario, profesor, contrasena FROM $this->tableUser WHERE correo = ?");
+        $stmt = $this->conn->prepare("SELECT usuario, profesor, contrasena, is_verified, token FROM $this->tableUser WHERE correo = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -24,15 +24,21 @@ class User {
     /**
      * Crear un nuevo usuario
      */
-    public function create($fullName, $email, $username, $password) {
+    public function create($fullName, $email, $username, $password, $token) {
 
         $profesor = 'no';
         $rfc = null;
         $activo = 'si';
 
-        $stmt = $this->conn->prepare("INSERT INTO " . $this->tableUser . " (nombre_completo, correo, usuario, contrasena, profesor, rfc, activo) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssss", $fullName, $email, $username, $password, $profesor, $rfc, $activo);
+        $stmt = $this->conn->prepare("INSERT INTO " . $this->tableUser . " (nombre_completo, correo, usuario, contrasena, profesor, rfc, activo, token, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)");
+        $stmt->bind_param("ssssssss", $fullName, $email, $username, $password, $profesor, $rfc, $activo, $token);
 
         return $stmt->execute();
+    }
+
+    public function verifyToken($token) {
+        $stmt = $this->conn->prepare("UPDATE $this->tableUser SET is_verified = 1, token = NULL WHERE token = ?");
+        $stmt->bind_param("s", $token);
+        return $stmt->execute() && $stmt->affected_rows > 0;
     }
 }

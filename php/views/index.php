@@ -10,6 +10,11 @@
     
 </head>
 <body>
+    <?php if (isset($_GET['message']) && $_GET['message'] === 'verified'): ?>
+        <div class="alert alert-success">✅ ¡Tu correo ha sido verificado correctamente!</div>
+    <?php elseif (isset($_GET['error']) && $_GET['error'] === 'invalid_token'): ?>
+        <div class="alert alert-danger">❌ El enlace de verificación no es válido o ha expirado.</div>
+    <?php endif; ?>
     <?php
     $mostrarRegistro = false;
     if (isset($_GET['message']) && $_GET['message'] === 'registered') {

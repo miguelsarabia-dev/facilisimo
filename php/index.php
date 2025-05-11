@@ -9,6 +9,11 @@ require_once 'controllers/AuthController.php';
 // Obtener la acción desde el query string
 $action = $_GET['action'] ?? null;
 
+if ($action === 'verify' && isset($_GET['token'])) {
+    AuthController::verifyEmail($_GET['token']);
+    exit;
+}
+
 switch ($action) {
     case 'login':
         AuthController::login($_POST);
@@ -34,4 +39,3 @@ switch ($action) {
         break;
 }
 ?>
-

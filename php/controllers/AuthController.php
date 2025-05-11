@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../helpers/CorreoHelper.php';
 
 class AuthController {
     public static function login($post) {
@@ -25,7 +26,10 @@ class AuthController {
         $user = $userModel->findByEmail($email);
 
         if ($user && password_verify($password, $user['contrasena'])) {
-     
+            if (!$user['is_verified']) {
+                header("Location: views/index.php?error=not_verified");
+                exit;
+            }
             session_start();
             $_SESSION['usuario'] = $email;
             $_SESSION['profesor'] = $user['profesor'];
@@ -56,15 +60,27 @@ class AuthController {
         }
 
         $passwordHash = password_hash($post['contrasena'], PASSWORD_DEFAULT);
+        $token = bin2hex(random_bytes(16));
 
         $userModel = new User($conn);
         // $user = $userModel->crear($fullName, $email, $username, $password);
 
-
-        if ($user = $userModel->create($fullName, $email, $username, $passwordHash)) {
+        if ($user = $userModel->create($fullName, $email, $username, $passwordHash, $token)) {
+            CorreoHelper::enviarCorreoVerificacion($email, $token);
             header("Location: views/index.php?message=registered");
         } else {
             header("Location: views/index.php?error=register");
+        }
+    }
+
+    public static function verifyEmail($token) {
+        $db = new Database();
+        $conn = $db->getConnection();
+        $userModel = new User($conn);
+        if ($userModel->verifyToken($token)) {
+            header("Location: views/index.php?message=verified");
+        } else {
+            header("Location: views/index.php?error=invalid_token");
         }
     }
 }
