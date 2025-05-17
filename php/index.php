@@ -28,6 +28,14 @@ switch ($action) {
         PreguntaController::crearPregunta($_POST);
         break;
 
+    case 'send_reset_link':
+        AuthController::sendResetLink($_POST);
+        break;
+
+    case 'reset_password':
+        AuthController::resetPassword($_POST);
+        break;
+
     case 'logout':
         session_destroy();
         header('Location: ../php/views/index.php');

@@ -41,4 +41,31 @@ class User {
         $stmt->bind_param("s", $token);
         return $stmt->execute() && $stmt->affected_rows > 0;
     }
+
+    public function setResetToken($email, $token) {
+        $stmt = $this->conn->prepare("UPDATE $this->tableUser SET reset_token = ? WHERE correo = ?");
+        $stmt->bind_param("ss", $token, $email);
+        return $stmt->execute();
+    }
+
+
+    /**
+     * Buscar usuario por reset token
+     */
+    public function findByResetToken($token) {
+        $stmt = $this->conn->prepare("SELECT * FROM $this->tableUser WHERE reset_token = ?");
+        $stmt->bind_param("s", $token);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->num_rows === 1 ? $result->fetch_assoc() : null;
+    }
+
+    /**
+     * Actualizar contraseña por reset token y limpiar el token
+     */
+    public function updatePasswordByToken($token, $hashedPassword) {
+        $stmt = $this->conn->prepare("UPDATE $this->tableUser SET contrasena = ?, reset_token = NULL WHERE reset_token = ?");
+        $stmt->bind_param("ss", $hashedPassword, $token);
+        return $stmt->execute();
+    }
 }
